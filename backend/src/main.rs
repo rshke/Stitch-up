@@ -4,7 +4,7 @@ use backend::telemetry::{get_subscriber, init_subscriber};
 
 #[tokio::main]
 async fn main() {
-    let subscriber = get_subscriber("chat-room".into(), "info".into(), std::io::stdout);
+    let subscriber = get_subscriber("stitch-up".into(), "info".into(), std::io::stdout);
     init_subscriber(subscriber);
 
     dotenvy::dotenv().ok();
