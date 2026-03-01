@@ -31,14 +31,11 @@ impl UserId {
 pub async fn reject_anonymous_users(request: Request, next: Next) -> Response {
     let (mut parts, body) = request.into_parts();
     let session =
-        match crate::routers::session_state::TypeSession::from_request_parts(
-            &mut parts,
-            &(),
-        )
-        .await
+        match crate::routers::session_state::TypeSession::from_request_parts(&mut parts, &()).await
         {
             Ok(session) => session,
-            Err(_) => {
+            Err(e) => {
+                tracing::error!("Failed to get session: {:?}", e);
                 return axum::response::Redirect::to("/login").into_response();
             }
         };
@@ -51,9 +48,7 @@ pub async fn reject_anonymous_users(request: Request, next: Next) -> Response {
             next.run(request).await
         }
         None => {
-            tracing::info!(
-                "Anonymous user attempted to access a protected route."
-            );
+            tracing::info!("Anonymous user attempted to access a protected route.");
             axum::response::Redirect::to("/login").into_response()
         }
     }

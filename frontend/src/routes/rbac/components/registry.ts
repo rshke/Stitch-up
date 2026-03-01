@@ -16,9 +16,10 @@ export const PERMISSIONS = {
     POST_MEMBERS: { method: "POST", path: "/api/members", description: "Create new member" },
     PUT_MEMBERS: { method: "PUT", path: "/api/members", description: "Update member" },
     GET_PROJECTS: { method: "GET", path: "/api/projects", description: "Fetch projects" },
+    POST_PROJECTS: { method: "POST", path: "/api/projects", description: "Create project" },
+    DELETE_PROJECTS: { method: "DELETE", path: "/api/projects", description: "Delete project" },
     GET_TASKS: { method: "GET", path: "/api/tasks", description: "Fetch tasks" },
     ARCHIVE_TASK: { method: "PUT", path: "/api/tasks/archive", description: "Archive task" },
-    GET_LOGS: { method: "GET", path: "/api/logs", description: "Fetch audit logs" },
 } as const;
 
 export const COMPONENTS: Component[] = [
@@ -47,17 +48,17 @@ export const COMPONENTS: Component[] = [
         permissions: [PERMISSIONS.ARCHIVE_TASK]
     },
     {
-        code: "comp_audit_log",
-        name: "Audit Log",
-        description: "View system audit logs",
-        permissions: [PERMISSIONS.GET_MEMBERS, PERMISSIONS.GET_LOGS] // Note: REUSES GET_MEMBERS
+        code: "comp_project_edit",
+        name: "Project Editor",
+        description: "Add or remove projects",
+        permissions: [PERMISSIONS.POST_PROJECTS, PERMISSIONS.DELETE_PROJECTS]
     }
 ];
 
 export const ROLES = {
     ADMIN: {
         name: "Admin",
-        components: ["comp_member_list", "comp_member_edit", "comp_board_view", "comp_task_archive", "comp_audit_log"]
+        components: ["comp_member_list", "comp_member_edit", "comp_board_view", "comp_task_archive", "comp_project_edit"]
     },
     MANAGER: {
         name: "Project Manager",
@@ -66,9 +67,5 @@ export const ROLES = {
     VIEWER: {
         name: "Viewer",
         components: ["comp_member_list", "comp_board_view"]
-    },
-    EXTERNAL_AUDITOR: {
-        name: "External Auditor",
-        components: ["comp_audit_log"] // Note: Sees logs (with member names), but cannot access Member List UI
     }
 };

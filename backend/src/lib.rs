@@ -1,7 +1,10 @@
 pub mod app_states;
 mod authentication;
 pub mod configuration;
-// pub mod domain;
+pub mod errors;
+pub mod models;
+pub mod rbac_demo;
 mod routers;
 pub mod startup;
 pub mod telemetry;
+pub mod utils;

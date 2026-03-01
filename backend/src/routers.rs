@@ -12,10 +12,11 @@ use axum::routing::{get, post};
 use axum_session::{SessionLayer, SessionStore};
 use axum_session_redispool::SessionRedisPool;
 use sqlx::{Pool, Postgres};
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
 use crate::app_states::AppState;
-use crate::authentication::reject_anonymous_users;
+use crate::rbac_demo;
 
 pub fn error_chain_fmt(
     e: &impl std::error::Error,
@@ -37,18 +38,20 @@ pub fn get_router(
 ) -> axum::Router {
     let app_state = Arc::new(AppState { pool, base_url });
 
-    // let admin_router = axum::Router::new()
-    //     .route("/password", post(admin::change_password))
-    //     .route("/logout", post(admin::logout))
-    //     .layer(from_fn(reject_anonymous_users));
+    // TODO: Restrict the origin to the frontend URL
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any);
 
     axum::Router::new()
         .route("/health", get(health_check::health_check))
         .route("/login", post(user::login))
-        // .nest("/admin", admin_router)
+        .nest("/rbac-demo", rbac_demo::router())
         .layer(TraceLayer::new_for_http())
+        .layer(cors)
         .layer(SessionLayer::new(session_store))
-        .layer(from_fn(reject_anonymous_users))
+        // .layer(from_fn(reject_anonymous_users))
         .layer(from_fn(log_app_errors))
         .with_state(app_state)
 }
